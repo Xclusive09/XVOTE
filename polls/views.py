@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from rest_framework import generics, permissions, status
 from rest_framework.views import APIView
+from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from .models import Admin, Student, Poll, Option, Vote, NFT
@@ -10,8 +11,7 @@ from django.contrib.auth import authenticate
 # Create your views here.
 
 # Admin Authentication and Management
-
-class AdminLoginView(APIView):
+class AdminLoginView(CreateAPIView):
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
@@ -31,13 +31,11 @@ class AdminLoginView(APIView):
 
 class PollCreateView(generics.CreateAPIView):
     serializer_class = PollSerializer
-    permissions_classes = [permissions.IsAdminUser]
-
+    permission_classes = [permissions.IsAdminUser]
 
     def perform_create(self, serializer):
         admin = Admin.objects.get(user=self.request.user)
         serializer.save(created_by=admin)
-
 
 class PollListView(generics.ListAPIView):
     queryset = Poll.objects.all()
@@ -76,7 +74,7 @@ class VoteCreateView(APIView):
             return Response({"error": "Invalid Student ID or Option ID"}, status=status.HTTP_400_BAD_REQUEST)
 
 # Real-time Vote Count Display
-class PollResultsView(APIView):
+class PollResultsView(generics.CreateAPIView):
     def get(self, request, poll_id):
         try:
             poll = Poll.objects.get(id=poll_id)

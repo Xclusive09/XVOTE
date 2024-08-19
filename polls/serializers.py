@@ -24,7 +24,8 @@ class StudentSerializer(serializers.ModelSerializer):
 class PollSerializer(serializers.ModelSerializer):
     class Meta:
         model = Poll
-        fields = ['id', 'title', 'description', 'start_date', 'end_date', 'created_by']
+        fields = ['id', 'title', 'description', 'start_date', 'end_date']
+        read_only_fields = ['created_by']
 
 class OptionSerializer(serializers.ModelSerializer):
     class Meta:
