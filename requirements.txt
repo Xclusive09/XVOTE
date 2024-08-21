@@ -6,3 +6,7 @@ Markdown==3.7
 pillow==10.4.0
 sqlparse==0.5.1
 typing_extensions==4.12.2
+solana
+requests
+jwt
+cryptography
