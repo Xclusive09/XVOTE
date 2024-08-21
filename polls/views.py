@@ -7,6 +7,8 @@ from django.contrib.auth.models import User
 from .models import Admin, Student, Poll, Option, Vote, NFT
 from .serializers import AdminSerializer, StudentSerializer, PollSerializer, OptionSerializer, VoteSerializer, NFTSerializer
 from django.contrib.auth import authenticate
+from .utils.SolanaUtils import check_nft_in_wallet
+
 
 # Create your views here.
 
@@ -59,17 +61,24 @@ class StudentLoginView(APIView):
 
 # Voting Functionality
 
+
 class VoteCreateView(APIView):
     def post(self, request):
         student_id = request.data.get('student_id')
         option_id = request.data.get('option_id')
+        
         try:
             student = Student.objects.get(student_id=student_id)
             option = Option.objects.get(id=option_id)
-            vote = Vote.objects.create(student=student, option=option)
-            # Here, you would mint an NFT on the Solana blockchain for the vote
-            # nft = mint_nft_on_solana(vote)
-            return Response({"message": "Vote recorded", "vote_id": vote.id}, status=status.HTTP_201_CREATED)
+            
+            # NFT Verification
+            token_mint = "your_nft_mint_address_here"
+            if check_nft_in_wallet(student.wallet_address, token_mint):
+                vote = Vote.objects.create(student=student, option=option)
+                return Response({"message": "Vote recorded", "vote_id": vote.id}, status=status.HTTP_201_CREATED)
+            else:
+                return Response({"error": "NFT not found in wallet"}, status=status.HTTP_403_FORBIDDEN)
+                
         except (Student.DoesNotExist, Option.DoesNotExist):
             return Response({"error": "Invalid Student ID or Option ID"}, status=status.HTTP_400_BAD_REQUEST)
 
