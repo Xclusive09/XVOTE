@@ -18,8 +18,6 @@ class StudentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student
         fields = ['id', 'student_id', 'name', 'email']
-        
-
 
 class PollSerializer(serializers.ModelSerializer):
     class Meta:
@@ -32,17 +30,13 @@ class OptionSerializer(serializers.ModelSerializer):
         model = Option
         fields = ['id', 'poll', 'option_text']
 
-
 class VoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vote
         fields = ['id', 'student', 'option', 'timestamp']
 
-
 class NFTSerializer(serializers.ModelSerializer):
-    vote = VoteSerializer()
+
     class Meta:
         model = NFT
-        fields = ['id', 'vote', 'token_address','minted_at']
-
-    
+        fields = ['id', 'token_address', 'minted_at']

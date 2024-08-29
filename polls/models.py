@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 # Model for Admin (inherits from User)
 class Admin(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    is_admin = models.BooleanField(default=True) 
+    is_admin = models.BooleanField(default=True)
 
     def __str__(self):
         return self.user.username
@@ -15,6 +15,7 @@ class Student(models.Model):
     name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
     wallet_address = models.CharField(max_length=100, unique=True)
+
     def __str__(self):
         return self.name
 

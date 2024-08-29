@@ -13,7 +13,7 @@ class VotingAppTests(APITestCase):
         self.admin = Admin.objects.create(user=self.admin_user)
         
         # Set up a student
-        self.student = Student.objects.create(student_id='S1234', name='Test Student', email='student@test.com')
+        self.student = Student.objects.create(student_id='S1234', name='Test Student', email='student@test.com', wallet_address="wallet123")
         
         # Set up a poll with timezone-aware datetimes
         self.poll = Poll.objects.create(
@@ -36,9 +36,12 @@ class VotingAppTests(APITestCase):
         url = reverse('admin-login')
         response = self.client.post(url, {'username': 'Xclusive', 'password': '@Akolade12'}, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        # self.assertEqual(response.data['message'], 'Admin Authenticated')  # Corrected message
         self.assertEqual(response.data['message'].strip(), 'Admin Authenticated')
 
+        # Test with wrong credentials
+        response = self.client.post(url, {'username': 'Xclusive', 'password': 'wrongpassword'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.data['error'], 'Invalid Credentials')
 
     def test_poll_creation(self):
         # Test poll creation (requires authentication as admin)
@@ -49,11 +52,15 @@ class VotingAppTests(APITestCase):
             'description': 'NACOS FUD CHAPTER ELECTION',
             'start_date': timezone.now(),
             'end_date': timezone.now() + timezone.timedelta(days=5),
-            'created_by': self.admin.id,
         }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data['title'], 'NACOS 2024')
+
+        # Test poll creation without admin login
+        self.client.logout()
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_poll_list(self):
         # Test poll listing
@@ -68,9 +75,40 @@ class VotingAppTests(APITestCase):
         self.client.login(username='Xclusive', password='@Akolade12')
         url = reverse('poll-detail', args=[self.poll.id])
         response = self.client.get(url, format='json')
-        print(response.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['title'], 'Test Poll')
+
+        # Test poll detail with invalid ID
+        url = reverse('poll-detail', args=[999])
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data['error'], 'Not found.')
+
+    def test_poll_update(self):
+        # Test poll update (requires admin login)
+        self.client.login(username='Xclusive', password='@Akolade12')
+        url = reverse('poll-detail', args=[self.poll.id])
+        data = {'title': 'Updated Test Poll'}
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['title'], 'Updated Test Poll')
+
+        # Test poll update with invalid ID
+        url = reverse('poll-detail', args=[999])
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_poll_delete(self):
+        # Test poll delete (requires admin login)
+        self.client.login(username='Xclusive', password='@Akolade12')
+        url = reverse('poll-detail', args=[self.poll.id])
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        # Test poll delete with invalid ID
+        url = reverse('poll-detail', args=[999])
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_student_login(self):
         # Test student login
@@ -78,6 +116,11 @@ class VotingAppTests(APITestCase):
         response = self.client.post(url, {'student_id': 'S1234'}, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['message'], 'Student Authenticated')
+
+        # Test student login with invalid ID
+        response = self.client.post(url, {'student_id': 'invalid_id'}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.data['error'], 'Invalid Student ID')
 
     def test_vote_creation(self):
         # Test vote creation
@@ -90,6 +133,21 @@ class VotingAppTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data['message'], 'Vote recorded')
 
+        # Test vote creation with invalid student ID
+        data['student_id'] = 'invalid_id'
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['error'], 'Invalid Student ID or Option ID')
+
+        # Test vote creation with invalid option ID
+        data = {
+            'student_id': 'S1234',
+            'option_id': 999,  # Invalid option ID
+        }
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data['error'], 'Invalid Student ID or Option ID')
+
     def test_poll_results(self):
         # Test real-time vote count display
         Vote.objects.create(student=self.student, option=self.option1)
@@ -99,3 +157,9 @@ class VotingAppTests(APITestCase):
         self.assertEqual(response.data['poll'], 'Test Poll')
         self.assertEqual(response.data['results']['Option 1'], 1)  # One vote for Option 1
         self.assertEqual(response.data['results']['Option 2'], 0)  # Zero votes for Option 2
+
+        # Test poll results with invalid poll ID
+        url = reverse('poll-results', args=[999])
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data['error'], 'Poll not found')
