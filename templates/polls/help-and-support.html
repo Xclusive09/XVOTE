@@ -1,0 +1,65 @@
+{% extends "base.html"%}
+{% block title%} Help and Support {% endblock %}
+{% block breadcrumb %}Help and Support {% endblock %}
+{% block content %}
+<div class="p-6 bg-white rounded-lg shadow-lg">
+
+    <!-- Header Section -->
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-dark-green">Help and Support</h1>
+        <p class="text-gray-600">Manage support tickets and access platform documentation.</p>
+    </div>
+
+    <!-- Support Tickets Section -->
+    <div class="mb-8">
+        <h2 class="text-xl font-bold text-dark-green mb-4">Support Tickets</h2>
+        <div class="bg-gray-100 p-4 rounded-lg shadow-sm">
+            <table class="w-full table-auto">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2 text-left text-gray-600">Ticket ID</th>
+                        <th class="px-4 py-2 text-left text-gray-600">Subject</th>
+                        <th class="px-4 py-2 text-left text-gray-600">Status</th>
+                        <th class="px-4 py-2 text-left text-gray-600">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Example Ticket Row -->
+                    <tr class="bg-white border-b">
+                        <td class="px-4 py-2 text-gray-800">#12345</td>
+                        <td class="px-4 py-2 text-gray-800">Issue with Voter Registration</td>
+                        <td class="px-4 py-2 text-gray-800">
+                            <span class="bg-yellow-300 text-yellow-800 px-2 py-1 rounded">Pending</span>
+                        </td>
+                        <td class="px-4 py-2 text-gray-800">
+                            <button
+                                class="bg-dark-green text-white px-3 py-1 rounded hover:bg-green-700 transition">View</button>
+                            <button
+                                class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-700 transition">Close</button>
+                        </td>
+                    </tr>
+                    <!-- Repeatable Rows -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Documentation Section -->
+    <div class="mb-8">
+        <h2 class="text-xl font-bold text-dark-green mb-4">Documentation</h2>
+        <div class="bg-gray-100 p-4 rounded-lg shadow-sm">
+            <ul class="list-disc list-inside">
+                <li><a href="#" class="text-blue-600 hover:underline">Getting Started with the Platform</a></li>
+                <li><a href="#" class="text-blue-600 hover:underline">How to Set Up Elections</a></li>
+                <li><a href="#" class="text-blue-600 hover:underline">Managing Voters and Candidates</a></li>
+                <li><a href="#" class="text-blue-600 hover:underline">Troubleshooting Common Issues</a></li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+{% endblock %}

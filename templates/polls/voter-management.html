@@ -1,0 +1,165 @@
+{% extends "base.html"%}
+{% block title%} Voter Management {% endblock %}
+{% block breadcrumb %}Voter Management {% endblock %}
+{% block content %}
+<div class="p-6 bg-white rounded-lg shadow-lg">
+
+    <!-- Header Section -->
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-dark-green">Voter Management</h1>
+        <button class="bg-dark-green text-white px-4 py-2 rounded-lg hover:bg-green-700" id="addVoterButton">
+            <i class="fas fa-user-plus mr-2"></i>Add New Voter
+        </button>
+    </div>
+
+    <!-- Voter List Table -->
+    <div class="overflow-x-auto bg-gray-100 p-4 rounded-lg shadow-sm">
+        <table class="min-w-full table-auto">
+            <thead class="bg-dark-green text-white">
+                <tr>
+                    <th class="px-4 py-2">ID</th>
+                    <th class="px-4 py-2">Name</th>
+                    <th class="px-4 py-2">Email</th>
+                    <th class="px-4 py-2">Status</th>
+                    <th class="px-4 py-2">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="text-gray-700">
+                <tr class="border-b">
+                    <td class="px-4 py-2">001</td>
+                    <td class="px-4 py-2">John Doe</td>
+                    <td class="px-4 py-2">john.doe@example.com</td>
+                    <td class="px-4 py-2 text-green-600">Verified</td>
+                    <td class="px-4 py-2">
+                        <button id="viewVoterButton" class="text-dark-green hover:underline"><i class="fas fa-eye"></i>
+                            View</button>
+                        <button class="text-red-600 hover:underline ml-4"><i class="fas fa-trash"></i> Remove</button>
+                    </td>
+                </tr>
+                <!-- More rows here -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Add New Voter Modal Trigger (Optional) -->
+    <div id="addVoterModal"
+        class="hidden fixed inset-0 z-50 bg-gray-800 bg-opacity-75 flex justify-center items-center">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md relative">
+            <button id="closeModalButton" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 class="text-xl font-bold text-dark-green mb-4">Add New Voter</h2>
+            <form>
+                <div class="mb-4">
+                    <label class="block text-gray-700">Name</label>
+                    <input type="text" class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                        placeholder="Enter voter's name">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700">Email</label>
+                    <input type="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                        placeholder="Enter voter's email">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700">Upload CSV (Optional)</label>
+                    <input type="file" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                </div>
+                <div class="flex justify-end">
+                    <button class="bg-dark-green text-white px-4 py-2 rounded-lg hover:bg-green-700">Add Voter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- View Voter Modal -->
+    <div id="viewVoterModal"
+        class="hidden fixed inset-0 z-50 bg-gray-800 bg-opacity-75 flex justify-center items-center">
+        <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md relative">
+            <button id="closeViewModalButton" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 class="text-xl font-bold text-dark-green mb-4">View Voter</h2>
+            <div class="mb-4">
+                <label class="block text-gray-700">Name</label>
+                <p id="viewVoterName" class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100"></p>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700">Email</label>
+                <p id="viewVoterEmail" class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100"></p>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700">Status</label>
+                <p id="viewVoterStatus" class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100"></p>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700">Age</label>
+                <p id="viewVoterAge" class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100"></p>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700">Address</label>
+                <p id="viewVoterAddress" class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100"></p>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700">Phone Number</label>
+                <p id="viewVoterPhoneNumber" class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Voter Verification Section -->
+    <div class="mt-8 bg-gray-100 p-4 rounded-lg shadow-sm">
+        <h2 class="text-xl font-bold text-dark-green mb-4">Voter Verification</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-white p-4 rounded-lg shadow-md">
+                <p class="text-gray-600">Voter KYC Verification Status</p>
+                <p class="text-green-600 font-bold">Completed</p>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow-md">
+                <p class="text-gray-600">Blockchain Identity Check</p>
+                <p class="text-yellow-500 font-bold">Pending</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const addVoterButton = document.getElementById('addVoterButton');
+        const addVoterModal = document.getElementById('addVoterModal');
+        const closeModalButton = document.getElementById('closeModalButton');
+
+        addVoterButton.addEventListener('click', function () {
+            addVoterModal.classList.toggle('hidden');
+        });
+
+        closeModalButton.addEventListener('click', function () {
+            addVoterModal.classList.add('hidden');
+        });
+    });
+    document.addEventListener('DOMContentLoaded', function () {
+        const viewVoterButton = document.getElementById('viewVoterButton');
+        const viewVoterModal = document.getElementById('viewVoterModal');
+        const closeViewModalButton = document.getElementById('closeViewModalButton');
+
+        viewVoterButton.addEventListener('click', function () {
+            // Populate the modal with voter information
+            document.getElementById('viewVoterName').textContent = 'John Doe';
+            document.getElementById('viewVoterEmail').textContent = 'john.doe@example.com';
+            document.getElementById('viewVoterStatus').textContent = 'Active';
+            document.getElementById('viewVoterAge').textContent = '30';
+            document.getElementById('viewVoterAddress').textContent = '123 Main St, Anytown, USA';
+            document.getElementById('viewVoterPhoneNumber').textContent = '(123) 456-7890';
+
+            // Show the modal
+            viewVoterModal.classList.remove('hidden');
+        });
+
+        closeViewModalButton.addEventListener('click', function () {
+            viewVoterModal.classList.add('hidden');
+        });
+    });
+</script>
+{% endblock %}

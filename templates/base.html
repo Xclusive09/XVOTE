@@ -1,0 +1,152 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XVOTE | {% block title%} {% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{% static '/css/tailwind.css' %}">
+    {% block extra_css %} {% endblock %}
+
+</head>
+
+<body>
+    <header class="bg-dark-green flex fixed justify-between w-full items-center p-4 shadow-lg">
+        <!-- Left side (Logo or Brand Name) -->
+        <div class="text-white text-2xl font-bold">XVOTE Admin Dashboard</div>
+
+        <!-- Right side (Profile and Notifications) -->
+        <div class="flex items-center space-x-4">
+            <div class="relative">
+
+                <!-- Notification Icon -->
+                <a href="#" id="notificationIcon" class="text-white relative">
+                    <i class="fas fa-bell text-xl"></i>
+                    <span
+                        class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">3</span>
+                </a>
+                <!-- Notification Dropdown -->
+                <div id="notificationDropdown"
+                    class="absolute right-0 mt-2 w-64 bg-white shadow-lg rounded-lg overflow-hidden hidden">
+                    <div class="p-4 bg-dark-green text-white font-bold">
+                        Notifications
+                    </div>
+                    <!-- Notification List -->
+                    <ul class="divide-y divide-gray-200">
+                        <!-- Notification 1 -->
+                        <li class="p-3 hover:bg-gray-100">
+                            <a href="#" class="flex items-center">
+                                <i class="fas fa-info-circle text-blue-500 mr-3"></i>
+                                <span>New election created!</span>
+                            </a>
+                        </li>
+                        <!-- Notification 2 -->
+                        <li class="p-3 hover:bg-gray-100">
+                            <a href="#" class="flex items-center">
+                                <i class="fas fa-vote-yea text-green-500 mr-3"></i>
+                                <span>Voter turnout has increased by 10%.</span>
+                            </a>
+                        </li>
+                        <!-- Notification 3 -->
+                        <li class="p-3 hover:bg-gray-100">
+                            <a href="#" class="flex items-center">
+                                <i class="fas fa-exclamation-circle text-red-500 mr-3"></i>
+                                <span>Election results delayed.</span>
+                            </a>
+                        </li>
+                        <!-- Notification 4 -->
+                        <li class="p-3 hover:bg-gray-100">
+                            <a href="#" class="flex items-center">
+                                <i class="fas fa-shield-alt text-yellow-500 mr-3"></i>
+                                <span>Security alert on recent votes.</span>
+                            </a>
+                        </li>
+                    </ul>
+                    <!-- View All Button -->
+                    <div class="p-4 text-center bg-gray-100">
+                        <a href="/notifications" class="text-dark-green font-semibold hover:text-green-700">View All
+                            Notifications</a>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- User Profile -->
+            <div class="flex items-center space-x-2">
+                <img src="https://via.placeholder.com/40" alt="profile"
+                    class="rounded-full w-10 h-10 border-2 border-white" />
+                <span class="text-white">Admin</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex">
+        <!-- Sidebar -->
+        {% include 'partials/sidebar.html' %}
+
+        <!-- Main Content -->
+        <main class="flex-grow p-6 ml-64 mt-[3.5rem] bg-gray-100 min-h-screen">
+            <nav class="bg-gray-100 p-4 rounded-lg shadow-sm mb-6">
+                <ol class="flex text-sm text-dark-green space-x-4">
+                    <!-- Home Link -->
+                    <li>
+                        <a href="/" class="text-dark-green hover:underline flex items-center">
+                            <i class="fas fa-home mr-1"></i>
+                            Home
+                        </a>
+                    </li>
+                    <!-- Separator -->
+                    <li>
+                        <span class="text-gray-500">/</span>
+                    </li>
+                    <!-- Dashboard Link -->
+                    <li>
+                        <a href="/dashboard" class="text-dark-green hover:underline">Dashboard</a>
+                    </li>
+                    <!-- Separator -->
+                    <li>
+                        <span class="text-gray-500">/</span>
+                    </li>
+                    <!-- Active Page -->
+                    <li class="text-gray-500">{% block breadcrumb %} {% endblock %}</li>
+                </ol>
+            </nav>
+
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
+
+
+
+    {% block extra_js %} {% endblock %}
+    <script>
+        // Get the notification icon and dropdown
+        const notificationIcon = document.getElementById('notificationIcon');
+        const notificationDropdown = document.getElementById('notificationDropdown');
+
+        // Function to toggle dropdown visibility
+        function toggleDropdown() {
+            notificationDropdown.classList.toggle('hidden');
+        }
+
+        // Toggle the dropdown when the notification icon is clicked
+        notificationIcon.addEventListener('click', (event) => {
+            event.preventDefault();
+            toggleDropdown();
+        });
+
+        // Close the dropdown if clicked outside of it
+        window.addEventListener('click', (event) => {
+            if (!notificationDropdown.contains(event.target) && !notificationIcon.contains(event.target)) {
+                notificationDropdown.classList.add('hidden');
+            }
+        });
+
+    </script>
+    <script src="{% static 'js/index.js'%}"></script>
+</body>
+
+</html>

@@ -1,0 +1,99 @@
+{% extends "base.html"%}
+{% block title%} Notifications {% endblock %}
+{% block breadcrumb %}Notifications {% endblock %}
+{% block content %}
+<div class="p-6 bg-white rounded-lg shadow-lg">
+
+    <!-- Header Section -->
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-dark-green">Notifications</h1>
+        <p class="text-gray-600">Configure system notifications and activity alerts for the platform.</p>
+    </div>
+
+    <!-- System Notifications Section -->
+    <div class="mb-8">
+        <h2 class="text-xl font-bold text-dark-green mb-4">System Notifications</h2>
+        <div class="bg-gray-100 p-4 rounded-lg shadow-sm">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                <!-- Enable Email Notifications -->
+                <div>
+                    <label class="block text-gray-700 font-bold mb-2" for="emailNotifications">Enable Email
+                        Notifications</label>
+                    <input type="checkbox" id="emailNotifications" class="w-5 h-5 text-green-600 form-checkbox">
+                </div>
+
+                <!-- Notification Type (Admins, Voters) -->
+                <div>
+                    <label class="block text-gray-700 font-bold mb-2" for="notificationType">Notification
+                        Recipients</label>
+                    <select id="notificationType" class="w-full p-2 border rounded-md">
+                        <option value="voters">Voters</option>
+                        <option value="admins">Admins</option>
+                        <option value="both">Both Voters and Admins</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Email Template Configuration -->
+            <div class="mt-4">
+                <label class="block text-gray-700 font-bold mb-2" for="emailTemplate">Email Template</label>
+                <textarea id="emailTemplate" rows="5" class="w-full p-2 border rounded-md"
+                    placeholder="Write your email template here..."></textarea>
+            </div>
+
+            <!-- Save Button -->
+            <div class="mt-6">
+                <button class="bg-dark-green text-white px-4 py-2 rounded hover:bg-green-700 transition">
+                    Save System Notifications
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Activity Alerts Section -->
+    <div class="mb-8">
+        <h2 class="text-xl font-bold text-dark-green mb-4">Activity Alerts</h2>
+        <div class="bg-gray-100 p-4 rounded-lg shadow-sm">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                <!-- Enable Critical Alerts -->
+                <div>
+                    <label class="block text-gray-700 font-bold mb-2" for="criticalAlerts">Enable Critical
+                        Alerts</label>
+                    <input type="checkbox" id="criticalAlerts" class="w-5 h-5 text-green-600 form-checkbox">
+                </div>
+
+                <!-- Alert Type (Vote Spikes, Security Breaches) -->
+                <div>
+                    <label class="block text-gray-700 font-bold mb-2" for="alertType">Alert Type</label>
+                    <select id="alertType" class="w-full p-2 border rounded-md">
+                        <option value="voteSpikes">Vote Spikes</option>
+                        <option value="securityBreaches">Security Breaches</option>
+                        <option value="both">Both Vote Spikes and Security Breaches</option>
+                    </select>
+                </div>
+
+                <!-- Alert Threshold (Number of votes or events) -->
+                <div>
+                    <label class="block text-gray-700 font-bold mb-2" for="alertThreshold">Alert Threshold</label>
+                    <input type="number" id="alertThreshold" class="w-full p-2 border rounded-md"
+                        placeholder="e.g., 100 votes">
+                </div>
+            </div>
+
+            <!-- Save Button -->
+            <div class="mt-6">
+                <button class="bg-dark-green text-white px-4 py-2 rounded hover:bg-green-700 transition">
+                    Save Activity Alerts
+                </button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+{% endblock %}

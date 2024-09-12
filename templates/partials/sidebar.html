@@ -1,0 +1,54 @@
+<aside class="w-64 bg-dark-green fixed mt-[3.5rem] h-screen shadow-lg">
+    <nav class="mt-10">
+        <ul>
+            <li class="text-gray-300 hover:text-white py-2 px-6">
+                <a href="{% url 'dashboard' %}" class="flex items-center">
+                    <i class="fas fa-tachometer-alt mr-3"></i>
+                    Dashboard
+                </a>
+            </li>
+            <li class="text-gray-300 hover:text-white py-2 px-6">
+                <a href="{% url 'elections' %}" class="flex items-center">
+                    <i class="fas fa-vote-yea mr-3"></i>
+                    Election Management
+                </a>
+            </li>
+            <li class="text-gray-300 hover:text-white py-2 px-6">
+                <a href="{% url 'voters' %}" class="flex items-center">
+                    <i class="fas fa-users mr-3"></i>
+                    Voter Management
+                </a>
+            </li>
+            <li class="text-gray-300 hover:text-white py-2 px-6">
+                <a href="{% url 'results-audit'%}" class="flex items-center">
+                    <i class="fas fa-chart-line mr-3"></i>
+                    Results and Audits
+                </a>
+            </li>
+            <li class="text-gray-300 hover:text-white py-2 px-6">
+                <a href="{% url 'user-management' %}" class="flex items-center">
+                    <i class="fas fa-user-cog mr-3"></i>
+                    User Management
+                </a>
+            </li>
+            <li class="text-gray-300 hover:text-white py-2 px-6">
+                <a href="{% url 'notifications' %}" class="flex items-center">
+                    <i class="fas fa-bell mr-3"></i>
+                    Notifications
+                </a>
+            </li>
+            <li class="text-gray-300 hover:text-white py-2 px-6">
+                <a href="{% url 'settings' %}" class="flex items-center">
+                    <i class="fas fa-cog mr-3"></i>
+                    Settings
+                </a>
+            </li>
+            <li class="text-gray-300 hover:text-white py-2 px-6">
+                <a href="{% url 'help-and-support' %}" class="flex items-center">
+                    <i class="fas fa-question-circle mr-3"></i>
+                    Help and Support
+                </a>
+            </li>
+        </ul>
+    </nav>
+</aside>
