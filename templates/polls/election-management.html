@@ -114,7 +114,7 @@
         </div>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
-         $(document).ready(function() {
+     $(document).ready(function() {
     fetchPolls();
 
     function fetchPolls() {
@@ -134,7 +134,7 @@
                             <p>Start Date: ${poll.start_date}</p>
                             <p>End Date: ${poll.end_date}</p>
                             <div class="mt-4 flex space-x-2">
-                                <button class="bg-blue-500 text-white px-4 py-2 rounded-lg">Modify</button>
+                                <button class="bg-blue-500 text-white px-4 py-2 rounded-lg" onclick="showModifyModal(${poll.id}, '${poll.title}', '${poll.start_date}', '${poll.end_date}')">Modify</button>
                                 <button class="bg-red-500 text-white px-4 py-2 rounded-lg" onclick="deletePoll(${poll.id})">Cancel</button>
                             </div>
                         </div>
@@ -143,6 +143,48 @@
             },
             error: function() {
                 alert('Error fetching polls.');
+            }
+        });
+    }
+
+    // Show Modify Modal
+    window.showModifyModal = function(pollId, title, startDate, endDate) {
+        $('#electionName').val(title);
+        $('#startDate').val(startDate);
+        $('#endDate').val(endDate);
+
+        $('#modifyModal').removeClass('hidden'); // Show the modal
+
+        // Save changes to poll
+        $('#modifyModal form').off('submit').on('submit', function(e) {
+            e.preventDefault(); // Prevent form submission from refreshing the page
+            modifyPoll(pollId);
+        });
+    }
+
+    // Modify poll function
+    function modifyPoll(pollId) {
+        const updatedData = {
+            title: $('#electionName').val(),
+            start_date: $('#startDate').val(),
+            end_date: $('#endDate').val()
+        };
+
+        $.ajax({
+            url: `/api/polls/${pollId}/`,  // API endpoint to modify poll
+            type: 'PUT',  // Or PATCH if only updating certain fields
+            data: JSON.stringify(updatedData),
+            contentType: 'application/json',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'  // Include CSRF token if necessary
+            },
+            success: function(response) {
+                alert('Poll modified successfully!');
+                $('#modifyModal').addClass('hidden'); // Hide the modal
+                fetchPolls();  // Refresh the polls list
+            },
+            error: function() {
+                alert('Error modifying poll.');
             }
         });
     }
@@ -166,6 +208,11 @@
             });
         }
     };
+
+    // Close Modify Modal
+    $('#closeModifyModal').on('click', function() {
+        $('#modifyModal').addClass('hidden');
+    });
 });
 
         </script>
@@ -211,7 +258,7 @@
         </div>
     </section>
 
-    <!-- Election History Section -->
+    <!-- Election History Section
     <section class="bg-white p-6 rounded-lg shadow-md">
         <h3 class="text-xl font-semibold mb-4">Election History</h3>
         <table class="table-auto w-full text-left">
@@ -238,7 +285,7 @@
                 </tr>
             </tbody>
         </table>
-    </section>
+    </section> -->
 </main>
 {% endblock %}
 
