@@ -25,8 +25,8 @@ urlpatterns = [
     # Admin authentication endpoint
     path("admin/login/", AdminLoginView.as_view(), name="admin-login"),
     # Poll management endpoints
-    path("polls/create/", PollCreateView.as_view(), name="poll-create"),
-    path("polls/", PollListView.as_view(), name="poll-list"),
+   path('polls/create/', PollCreateView.as_view(), name='election-create'),
+    path('polls/', PollListView.as_view(), name='election-list'),
     path("polls/<int:pk>/", PollDetailView.as_view(), name="poll-detail"),
     path("polls/<int:pk>/update/", PollUpdateView.as_view(), name="poll-update"),
     path("polls/<int:pk>/delete/", PollDeleteView.as_view(), name="poll-delete"),

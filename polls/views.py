@@ -3,6 +3,7 @@ from rest_framework import generics, permissions, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth import authenticate
+from django.core.exceptions import PermissionDenied
 from .models import Admin, Student, Poll, Option, Vote, NFT
 from .serializers import AdminSerializer, StudentSerializer, PollSerializer, OptionSerializer, VoteSerializer, NFTSerializer
 # from .utils.SolanaUtils import check_nft_in_wallet
@@ -65,16 +66,24 @@ class AdminLoginView(APIView):
 # Poll Creation, Management, and Retrieval
 
 
+
 class PollCreateView(generics.CreateAPIView):
     serializer_class = PollSerializer
     permission_classes = [permissions.IsAdminUser]
 
     def perform_create(self, serializer):
+        # Check if the user is authenticated
         if not self.request.user.is_authenticated:
             raise PermissionDenied("User is not authenticated")
-        admin = Admin.objects.get(user=self.request.user)
-        serializer.save(admin=admin)
 
+        # Try to get the admin instance
+        try:
+            admin = Admin.objects.get(user=self.request.user)
+        except Admin.DoesNotExist:
+            raise PermissionDenied("You do not have permission to create a poll.")
+
+        # Save the poll with the admin instance
+        serializer.save(created_by=admin)
 
 class PollListView(generics.ListAPIView):
     queryset = Poll.objects.all()
