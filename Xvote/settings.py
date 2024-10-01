@@ -14,8 +14,9 @@ import os
 from pathlib import Path
 from decouple import config
 
+UNDERDOG_API_KEY = '6fdc91ef020072.7f85226a243d4d52ba8ae83ab7e1ac49'
 
-UNDERDOG_API_KEY = config('UNDERDOG_API_KEY')
+# UNDERDOG_API_KEY = config('UNDERDOG_API_KEY')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent

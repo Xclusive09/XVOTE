@@ -7,7 +7,6 @@ from django.contrib.auth import authenticate
 from django.core.exceptions import PermissionDenied
 from .models import Admin, Student, Poll, Option, Vote, NFT
 from .serializers import AdminSerializer, StudentSerializer, PollSerializer, OptionSerializer, VoteSerializer, NFTSerializer
-# from .utils.SolanaUtils import check_nft_in_wallet
 from django.views import View
 from django.views.decorators.http import require_POST
 import requests
@@ -223,12 +222,11 @@ class VoteListView(generics.ListAPIView):
     permission_classes = [permissions.IsAdminUser]
 
 
-UNDERDOG_API_KEY = settings.UNDERDOG_API_KEY
-UNDERDOG_API_URL = "https://api.underdogprotocol.com/v1/nfts"
 
 def mint_nft(request, nft_id):
     nft = get_object_or_404(NFT, pk=nft_id)
 
+    # Check if the NFT has already been minted
     if nft.token_address:
         return HttpResponse("NFT already minted!")
 
@@ -252,18 +250,17 @@ def mint_nft(request, nft_id):
         response_data = response.json()
 
         if response.status_code == 200:
-            nft.token_address = response_data['token_address']
-            nft.minting_link = response_data['minting_link']  # Store the minting link
+            # Assuming the response contains the fields `token_address` and `minting_link`
+            nft.token_address = response_data.get('token_address')  # Get the token address
+            nft.minting_link = response_data.get('minting_link')    # Get the minting link
             nft.save()
 
-            # Optionally, display or store the minting link to share with voters
             return HttpResponse(f"NFT minted successfully! Share this link with voters to mint: {nft.minting_link}")
         else:
-            return HttpResponse(f"Failed to mint NFT: {response_data}")
+            return HttpResponse(f"Failed to mint NFT: {response_data.get('message', 'Unknown error')}", status=400)
     
     except Exception as e:
-        return HttpResponse(f"Error: {str(e)}")
-
+        return HttpResponse(f"Error: {str(e)}", status=500)
 # # View to handle vote submission
 # @require_POST
 # def submit_vote(request):

@@ -10,7 +10,7 @@ from .views import (
     PollUpdateView,
     PollDeleteView,
     VoteListView,
-    NFTVerifyView,
+    NFTVerifyMintView,
     dashboard,
     election_management,
     voter_management,
@@ -38,7 +38,7 @@ urlpatterns = [
     path("votes/", VoteListView.as_view(), name="vote-list"),
     # NFT verification endpoint
     path('admin/mint-nft/<int:nft_id>/', views.mint_nft, name='mint_nft'),
-    path("nft/verify/", NFTVerifyView.as_view(), name="nft-verify"),
+    path("nft/verify/", NFTVerifyMintView.as_view(), name="nft-verify"),
     # Poll results endpoint
     path(
         "polls/<int:poll_id>/results/", PollResultsView.as_view(), name="poll-results"
@@ -48,7 +48,7 @@ urlpatterns = [
     # path('elections/vote/', SubmitVoteView.as_view(), name='submit-vote'),
     path('mint/<int:nft_id>/<int:election_id>/', views.mint_nft, name='mint_nft'),
 
-    path('elections/nft-verify/', NFTVerifyView.as_view(), name='nft-verify'),
+    path('elections/nft-verify/', NFTVerifyMintView.as_view(), name='nft-verify'),
     # Voters Path
 #    path('submit_vote/', views.submit_vote, name='submit_vote'),
 #     path('election/<int:election_id>/candidates/', views.get_candidates, name='get_candidates'),

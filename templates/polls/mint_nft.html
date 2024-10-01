@@ -3,20 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mint Your NFT</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.5.2/web3.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.30.0/lib/index.iife.js"></script>
+    <title>Election Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-    <h1>Mint Your NFT for {{ election.title }}</h1>
-    <p>{{ nft.description }}</p>
+<body class="bg-gray-100 font-sans">
+    <div class="container mx-auto p-8">
+        <h1 class="text-3xl font-bold mb-4">Mint Your NFT for {{ election.title }}</h1>
+        <p class="mb-6 text-gray-700">{{ nft.description }}</p>
 
-    <!-- Button for connecting Phantom wallet -->
-    <button id="connectWallet">Connect Phantom Wallet</button>
-    <div id="walletStatus"></div>
+        <!-- Button for connecting Phantom wallet -->
+        <button id="connectWallet" class="bg-green-500 text-white flex items-center px-4 py-2 rounded hover:bg-green-600 transition duration-200">
+            <img src="https://phantom.app/img/logo.png" alt="Phantom Logo" class="h-5 w-5 mr-2" />
+            Connect Phantom Wallet
+        </button>
+        <div id="walletStatus" class="mt-4 text-gray-600"></div>
 
-    <!-- Button for minting NFT -->
-    <button id="mintNFT" disabled>Mint NFT</button>
+        <!-- Button for minting NFT -->
+        <button id="mintNFT" disabled class="bg-gray-400 text-white px-4 py-2 rounded mt-2 cursor-not-allowed">
+            Mint NFT
+        </button>
+    </div>
 
     <script>
         let walletAddress = null;
@@ -29,6 +35,8 @@
                     walletAddress = resp.publicKey.toString();
                     document.getElementById('walletStatus').innerText = `Wallet Connected: ${walletAddress}`;
                     document.getElementById('mintNFT').disabled = false;
+                    document.getElementById('mintNFT').classList.remove('bg-gray-400', 'cursor-not-allowed');
+                    document.getElementById('mintNFT').classList.add('bg-green-500', 'hover:bg-green-600');
                 } catch (err) {
                     console.error('Wallet connection failed!', err);
                 }
@@ -44,9 +52,57 @@
                 return;
             }
 
-            // Here you can implement the logic for minting the NFT using Solana SDK or a service like Metaplex/Underdog
-            alert('Minting NFT (this is just a placeholder, integrate your minting logic here).');
+            try {
+                // Prepare data for minting
+                const nftData = {
+                    title: "Test NFT", // Replace with actual NFT title
+                    symbol: "TNFT",    // Replace with actual NFT symbol
+                    image: "https://example.com/image.png", // Replace with actual image URL
+                    description: "{{ nft.description }}", // Use the description from your backend
+                    wallet: walletAddress // The connected wallet address
+                };
+
+                // Call your backend API to mint the NFT
+                const response = await fetch('/api/mint-nft/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken'), // CSRF token for security
+                    },
+                    body: JSON.stringify(nftData),
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert(`NFT minted successfully! Transaction ID: ${result.transactionId}`);
+                    
+                    // Redirect to voting page after minting
+                    window.location.href = '/voting-page/'; // Replace with your actual voting page URL
+                } else {
+                    alert(`Minting failed: ${result.message}`);
+                }
+            } catch (error) {
+                console.error('Error minting NFT:', error);
+                alert('An error occurred while minting the NFT.');
+            }
         };
+
+        // Function to get CSRF token for AJAX requests
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
     </script>
 </body>
 </html>
