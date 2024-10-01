@@ -15,6 +15,7 @@ venv/
 .DS_Store
 myenv/
 frontend/node_modules
+node_modules/
 frontend/package-lock.json
 Pipfile
 Pipfile.lock
