@@ -19,3 +19,7 @@ frontend/package-lock.json
 Pipfile
 Pipfile.lock
 
+.solana/
+.solana-wallets/
+target/
+*.so

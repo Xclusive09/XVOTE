@@ -1,5 +1,36 @@
 from django.contrib import admin
 from .models import Admin, Student, Poll, Option, Vote, NFT
+from django.utils.html import format_html
+import requests  # For making requests to mint NFT
+
+class NFTAdmin(admin.ModelAdmin):
+    list_display = ('vote', 'token_address', 'minted_at', 'view_image', 'mint_nft_button')
+    readonly_fields = ('token_address', 'minted_at')
+    
+    # Form for creating NFTs
+    def get_fields(self, request, obj=None):
+        fields = super().get_fields(request, obj)
+        if obj:
+            return fields + ('token_address',)  # Show token_address after minting
+        return fields
+    
+    # Display the uploaded image in the admin panel
+    def view_image(self, obj):
+        if obj.image:
+            return format_html(f'<img src="{obj.image.url}" width="100px" />')
+        return "No Image"
+    
+    # Custom button to trigger minting NFTs
+    def mint_nft_button(self, obj):
+        if not obj.token_address:  # Only show the button if NFT isn't minted
+            return format_html(f'<a class="button" href="/admin/mint-nft/{obj.id}">Mint NFT</a>')
+        return "Already Minted"
+    
+    mint_nft_button.short_description = "Mint NFT"
+    view_image.short_description = "Image"
+
+admin.site.register(NFT, NFTAdmin)
+
 
 @admin.register(Admin)
 class AdminAdmin(admin.ModelAdmin):
@@ -28,7 +59,8 @@ class VoteAdmin(admin.ModelAdmin):
     list_filter = ('timestamp',)
     search_fields = ('student__name', 'option__option_text')
 
-@admin.register(NFT)
-class NFTAdmin(admin.ModelAdmin):
-    list_display = ('vote', 'token_address', 'minted_at')
-    search_fields = ('token_address',)
+# @admin.register(NFT)
+# class NFTAdmin(admin.ModelAdmin):
+#     list_display = ('vote', 'token_address', 'minted_at')
+#     search_fields = ('token_address',)
+#     pass

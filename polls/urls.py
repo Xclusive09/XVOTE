@@ -20,6 +20,7 @@ from .views import (
     settings,
     help_and_support,
 )
+from polls import views
 
 urlpatterns = [
     # Admin authentication endpoint
@@ -36,11 +37,22 @@ urlpatterns = [
     path("vote/", VoteCreateView.as_view(), name="vote-create"),
     path("votes/", VoteListView.as_view(), name="vote-list"),
     # NFT verification endpoint
+    path('admin/mint-nft/<int:nft_id>/', views.mint_nft, name='mint_nft'),
     path("nft/verify/", NFTVerifyView.as_view(), name="nft-verify"),
     # Poll results endpoint
     path(
         "polls/<int:poll_id>/results/", PollResultsView.as_view(), name="poll-results"
     ),
+    
+    # path('elections/create/', CreateElectionView.as_view(), name='create-election'),
+    # path('elections/vote/', SubmitVoteView.as_view(), name='submit-vote'),
+    path('mint/<int:nft_id>/<int:election_id>/', views.mint_nft, name='mint_nft'),
+
+    path('elections/nft-verify/', NFTVerifyView.as_view(), name='nft-verify'),
+    # Voters Path
+#    path('submit_vote/', views.submit_vote, name='submit_vote'),
+#     path('election/<int:election_id>/candidates/', views.get_candidates, name='get_candidates'),
+
     # Dashboard
     path("dashboard", dashboard, name="dashboard"),
     path("elections", election_management, name="elections"),

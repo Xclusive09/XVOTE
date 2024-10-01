@@ -51,6 +51,9 @@ class Vote(models.Model):
 class NFT(models.Model):
     vote = models.OneToOneField(Vote, on_delete=models.CASCADE)
     token_address = models.CharField(max_length=100, unique=True)
+    image = models.ImageField(upload_to='nft_images/')  # New field for the NFT image
+    minting_link = models.URLField(blank=True, null=True)  # Add this field for the minting link
+
     minted_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

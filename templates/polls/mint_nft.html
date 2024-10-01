@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mint Your NFT</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.5.2/web3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@1.30.0/lib/index.iife.js"></script>
+</head>
+<body>
+    <h1>Mint Your NFT for {{ election.title }}</h1>
+    <p>{{ nft.description }}</p>
+
+    <!-- Button for connecting Phantom wallet -->
+    <button id="connectWallet">Connect Phantom Wallet</button>
+    <div id="walletStatus"></div>
+
+    <!-- Button for minting NFT -->
+    <button id="mintNFT" disabled>Mint NFT</button>
+
+    <script>
+        let walletAddress = null;
+
+        // Connect Phantom Wallet
+        document.getElementById('connectWallet').onclick = async function() {
+            if (window.solana && window.solana.isPhantom) {
+                try {
+                    const resp = await window.solana.connect();
+                    walletAddress = resp.publicKey.toString();
+                    document.getElementById('walletStatus').innerText = `Wallet Connected: ${walletAddress}`;
+                    document.getElementById('mintNFT').disabled = false;
+                } catch (err) {
+                    console.error('Wallet connection failed!', err);
+                }
+            } else {
+                alert('Phantom wallet not detected!');
+            }
+        };
+
+        // Mint NFT
+        document.getElementById('mintNFT').onclick = async function() {
+            if (!walletAddress) {
+                alert('Please connect your Phantom wallet first!');
+                return;
+            }
+
+            // Here you can implement the logic for minting the NFT using Solana SDK or a service like Metaplex/Underdog
+            alert('Minting NFT (this is just a placeholder, integrate your minting logic here).');
+        };
+    </script>
+</body>
+</html>
