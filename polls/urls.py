@@ -17,7 +17,7 @@ from .views import (
     results_audit,
     user_management,
     notifications,
-    settings,
+    settings_view,
     help_and_support,
 )
 from polls import views
@@ -26,7 +26,7 @@ urlpatterns = [
     # Admin authentication endpoint
     path("admin/login/", AdminLoginView.as_view(), name="admin-login"),
     # Poll management endpoints
-   path('polls/create/', PollCreateView.as_view(), name='election-create'),
+    path('polls/create/', PollCreateView.as_view(), name='election-create'),
     path('polls/', PollListView.as_view(), name='election-list'),
     path("polls/<int:pk>/", PollDetailView.as_view(), name="poll-detail"),
     path("polls/<int:pk>/update/", PollUpdateView.as_view(), name="poll-update"),
@@ -38,11 +38,14 @@ urlpatterns = [
     path("votes/", VoteListView.as_view(), name="vote-list"),
     # NFT verification endpoint
     path('admin/mint-nft/<int:nft_id>/', views.mint_nft, name='mint_nft'),
+    path('api/nft/mint/<int:nft_id>/', NFTVerifyMintView.as_view(), name='mint-nft'),  # This should exist
     path("nft/verify/", NFTVerifyMintView.as_view(), name="nft-verify"),
     # Poll results endpoint
     path(
         "polls/<int:poll_id>/results/", PollResultsView.as_view(), name="poll-results"
     ),
+    path('polls/<int:poll_id>/vote/', views.PollVoteView.as_view(), name='submit-vote'),
+
     
     # path('elections/create/', CreateElectionView.as_view(), name='create-election'),
     # path('elections/vote/', SubmitVoteView.as_view(), name='submit-vote'),
@@ -60,6 +63,6 @@ urlpatterns = [
     path("results-audit", results_audit, name="results-audit"),
     path("user-management", user_management, name="user-management"),
     path("notifications", notifications, name="notifications"),
-    path("settings", settings, name="settings"),
+    path("settings", settings_view, name="settings"),
     path("help-and-support", help_and_support, name="help-and-support"),
 ]

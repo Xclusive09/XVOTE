@@ -14,7 +14,8 @@ import os
 from pathlib import Path
 from decouple import config
 
-UNDERDOG_API_KEY = '6fdc91ef020072.7f85226a243d4d52ba8ae83ab7e1ac49'
+API_KEY = os.getenv('YOUR_API_KEY_ENV_VAR')
+
 
 # UNDERDOG_API_KEY = config('UNDERDOG_API_KEY')
 

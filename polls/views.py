@@ -12,7 +12,7 @@ from django.views.decorators.http import require_POST
 import requests
 import json
 from django.conf import settings
-
+from django.urls import reverse
 
 
 def dashboard(request):
@@ -39,16 +39,15 @@ def notifications(request):
     return render(request, 'polls/notifications.html')
 
 
-def settings(request):
+def settings_view(request):
     return render(request, 'polls/settings.html')
 
 
 def help_and_support(request):
     return render(request, 'polls/help-and-support.html')
 
+
 # Admin Authentication and Management
-
-
 class AdminLoginView(APIView):
     queryset = Admin.objects.all()
 
@@ -68,10 +67,8 @@ class AdminLoginView(APIView):
                 return Response({"error": "Admin account not found"}, status=status.HTTP_404_NOT_FOUND)
         return Response({"error": "Invalid Credentials"}, status=status.HTTP_401_UNAUTHORIZED)
 
+
 # Poll Creation, Management, and Retrieval
-
-
-
 class PollCreateView(generics.CreateAPIView):
     serializer_class = PollSerializer
     permission_classes = [permissions.IsAdminUser]
@@ -88,7 +85,50 @@ class PollCreateView(generics.CreateAPIView):
             raise PermissionDenied("You do not have permission to create a poll.")
 
         # Save the poll with the admin instance
-        serializer.save(created_by=admin)
+        poll = serializer.save(created_by=admin)
+
+        # Generate the poll voting link
+        poll_link = self.request.build_absolute_uri(
+            reverse('submit-vote', kwargs={'poll_id': poll.id})
+        )
+        
+        # Generate the NFT minting link
+        nft_link = self.request.build_absolute_uri(
+            reverse('mint-nft', kwargs={'nft_id': poll.id})
+
+        )
+
+        # Log the links for monitoring
+        print(f'Poll vote URL: {poll_link}')
+        print(f'NFT minting URL: {nft_link}')
+
+        # Optionally, save these links to the database or return them in the response
+        # Poll.objects.filter(id=poll.id).update(voting_link=poll_link, nft_link=nft_link)
+
+        # Return the poll and voting link in the response
+        return Response(
+            {
+                "message": "Poll created successfully",
+                "poll_link": poll_link,
+                "nft_link": nft_link
+            },
+            status=status.HTTP_201_CREATED
+        )
+
+
+# View for rendering the voting page for the poll
+class PollVoteView(APIView):
+    queryset = Poll.objects.all()  # Set queryset here
+
+    def get(self, request, poll_id):
+        # Fetch the poll by its ID
+        poll = get_object_or_404(Poll, id=poll_id)
+
+        # Fetch poll options (candidates)
+        options = poll.options.all()
+
+        return render(request, 'polls/voters.html', {'poll': poll, 'options': options})
+
 
 class PollListView(generics.ListAPIView):
     queryset = Poll.objects.all()
@@ -112,9 +152,8 @@ class PollDeleteView(generics.DestroyAPIView):
     serializer_class = PollSerializer
     permission_classes = [permissions.IsAdminUser]
 
+
 # Student Authentication using the NFT
-
-
 class StudentLoginView(APIView):
     def post(self, request):
         student_id = request.data.get('student_id')
@@ -126,9 +165,8 @@ class StudentLoginView(APIView):
         except Student.DoesNotExist:
             return Response({"error": "Invalid Student ID"}, status=status.HTTP_401_UNAUTHORIZED)
 
+
 # Voting Functionality
-
-
 class VoteCreateView(APIView):
     def post(self, request):
         student_id = request.data.get('student_id')
@@ -152,37 +190,30 @@ class VoteCreateView(APIView):
         except (Student.DoesNotExist, Option.DoesNotExist):
             return Response({"error": "Invalid Student ID or Option ID"}, status=status.HTTP_400_BAD_REQUEST)
 
+
 # Real-time Vote Count Display
-
-
 class PollResultsView(APIView):
     def get(self, request, poll_id):
         try:
             poll = Poll.objects.get(id=poll_id)
             options = poll.options.all()
-            results = {option.text: option.vote_set.count()
-                       for option in options}
+            results = {option.text: option.vote_set.count() for option in options}
             return Response({"poll": poll.title, "results": results}, status=status.HTTP_200_OK)
         except Poll.DoesNotExist:
             return Response({"error": "Poll not found"}, status=status.HTTP_404_NOT_FOUND)
 
+
 # NFT Verification
-
-
-
-
 class NFTVerifyMintView(APIView):
     permission_classes = [permissions.IsAuthenticated]  # Only authenticated users can access this view
 
-    def get(self, request, election_id, nft_id):
+    def get(self, request, nft_id):
         """
         Renders the HTML page for minting an NFT.
         """
-        election = get_object_or_404(Election, pk=election_id)
         nft = get_object_or_404(NFT, pk=nft_id)
 
         context = {
-            'election': election,
             'nft': nft,
         }
 
@@ -213,14 +244,12 @@ class NFTVerifyMintView(APIView):
         except NFT.DoesNotExist:
             return Response({"error": "NFT not found"}, status=status.HTTP_404_NOT_FOUND)
 
+
 # Vote List (Admin use case)
-
-
 class VoteListView(generics.ListAPIView):
     queryset = Vote.objects.all()
     serializer_class = VoteSerializer
     permission_classes = [permissions.IsAdminUser]
-
 
 
 def mint_nft(request, nft_id):
@@ -230,65 +259,31 @@ def mint_nft(request, nft_id):
     if nft.token_address:
         return HttpResponse("NFT already minted!")
 
+    poll = nft.vote
+    project_id = poll.id
+
     # Prepare the data for the API request
     data = {
         "name": f"NFT for Vote {nft.vote.id}",
         "symbol": "VOTE_NFT",
         "metadata": {
-            "image": request.build_absolute_uri(nft.image.url),
-        }
+            "description": "NFT for voting",
+            "image": "image_url",  # Replace with the actual image URL
+        },
+        "recipient": nft.recipient,
     }
 
-    headers = {
-        "Authorization": f"Bearer {UNDERDOG_API_KEY}",
-        "Content-Type": "application/json"
-    }
+    # Make the API request to mint the NFT
+    response = requests.post(
+        f"{settings.UNDERDOG_API_URL}/nft/mint",
+        headers={"Authorization": f"Bearer {settings.UNDERDOG_API_TOKEN}"},
+        json=data,
+    )
 
-    try:
-        # Send a request to the Underdog API to mint the NFT
-        response = requests.post(UNDERDOG_API_URL, headers=headers, data=json.dumps(data))
-        response_data = response.json()
-
-        if response.status_code == 200:
-            # Assuming the response contains the fields `token_address` and `minting_link`
-            nft.token_address = response_data.get('token_address')  # Get the token address
-            nft.minting_link = response_data.get('minting_link')    # Get the minting link
-            nft.save()
-
-            return HttpResponse(f"NFT minted successfully! Share this link with voters to mint: {nft.minting_link}")
-        else:
-            return HttpResponse(f"Failed to mint NFT: {response_data.get('message', 'Unknown error')}", status=400)
-    
-    except Exception as e:
-        return HttpResponse(f"Error: {str(e)}", status=500)
-# # View to handle vote submission
-# @require_POST
-# def submit_vote(request):
-#     election_id = request.POST.get('election_id')
-#     candidate_id = request.POST.get('candidate_id')
-
-#     if not election_id or not candidate_id:
-#         return JsonResponse({'error': 'Election ID and Candidate ID are required.'}, status=400)
-
-#     poll = get_object_or_404(Poll, id=election_id)
-#     candidate = get_object_or_404(Option, id=candidate_id)
-
-#     if not request.user.is_authenticated:
-#         return JsonResponse({'error': 'You must be logged in to vote.'}, status=401)
-
-#     if Vote.objects.filter(voter=request.user, poll=poll).exists():
-#         return JsonResponse({'error': 'You have already voted in this election.'}, status=400)
-
-#     Vote.objects.create(voter=request.user, poll=poll, option=candidate)
-#     return JsonResponse({'message': 'Your vote has been submitted successfully.'}, status=201)
-
-# # API to fetch candidates for an election
-# def get_candidates(request, election_id):
-#     poll = get_object_or_404(Poll, id=election_id)
-#     candidates = poll.options.all()
-
-#     if not candidates.exists():
-#         return JsonResponse({'error': 'No candidates found for this election.'}, status=404)
-
-#     candidate_data = [{'id': candidate.id, 'option_text': candidate.option_text} for candidate in candidates]
-#     return JsonResponse({'candidates': candidate_data}, status=200)
+    if response.status_code == 200:
+        # Update the NFT record with the token address
+        nft.token_address = response.json().get("token_address")
+        nft.save()
+        return JsonResponse({"message": "NFT minted successfully", "nft_address": nft.token_address}, status=201)
+    else:
+        return JsonResponse({"error": "Failed to mint NFT"}, status=response.status_code)

@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Election Management</title>
+    <title>Mint NFT for Election</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100 font-sans">
     <div class="container mx-auto p-8">
         <h1 class="text-3xl font-bold mb-4">Mint Your NFT for {{ election.title }}</h1>
-        <p class="mb-6 text-gray-700">{{ nft.description }}</p>
+        <p class="mb-6 text-gray-700">{{ election.description }}</p>
 
-        <!-- Button for connecting Phantom wallet -->
+        <!-- Connect Phantom Wallet -->
         <button id="connectWallet" class="bg-green-500 text-white flex items-center px-4 py-2 rounded hover:bg-green-600 transition duration-200">
             <img src="https://phantom.app/img/logo.png" alt="Phantom Logo" class="h-5 w-5 mr-2" />
             Connect Phantom Wallet
         </button>
         <div id="walletStatus" class="mt-4 text-gray-600"></div>
 
-        <!-- Button for minting NFT -->
+        <!-- Mint NFT Button -->
         <button id="mintNFT" disabled class="bg-gray-400 text-white px-4 py-2 rounded mt-2 cursor-not-allowed">
             Mint NFT
         </button>
@@ -45,7 +45,7 @@
             }
         };
 
-        // Mint NFT
+        // Mint NFT and redirect to poll page
         document.getElementById('mintNFT').onclick = async function() {
             if (!walletAddress) {
                 alert('Please connect your Phantom wallet first!');
@@ -55,19 +55,19 @@
             try {
                 // Prepare data for minting
                 const nftData = {
-                    title: "Test NFT", // Replace with actual NFT title
-                    symbol: "TNFT",    // Replace with actual NFT symbol
-                    image: "https://example.com/image.png", // Replace with actual image URL
-                    description: "{{ nft.description }}", // Use the description from your backend
-                    wallet: walletAddress // The connected wallet address
+                    title: "Test NFT",
+                    symbol: "TNFT",
+                    image: "https://example.com/image.png",
+                    description: "{{ election.description }}",
+                    wallet: walletAddress
                 };
 
-                // Call your backend API to mint the NFT
+                // Call the backend API to mint the NFT
                 const response = await fetch('/api/mint-nft/', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken'), // CSRF token for security
+                        'X-CSRFToken': getCookie('csrftoken'), // Ensure CSRF token for security
                     },
                     body: JSON.stringify(nftData),
                 });
@@ -76,9 +76,9 @@
 
                 if (response.ok) {
                     alert(`NFT minted successfully! Transaction ID: ${result.transactionId}`);
-                    
-                    // Redirect to voting page after minting
-                    window.location.href = '/voting-page/'; // Replace with your actual voting page URL
+
+                    // Redirect to the voting page for the current election
+                    window.location.href = `/polls/{{ election.id }}/`; // Replace with the actual voting page URL
                 } else {
                     alert(`Minting failed: ${result.message}`);
                 }
