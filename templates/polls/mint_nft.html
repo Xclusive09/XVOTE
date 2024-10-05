@@ -4,12 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mint NFT for Election</title>
+    <link rel="icon" type="image/svg+xml" href="/static/img/LogoLarge.png" />
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100 font-sans">
     <div class="container mx-auto p-8">
-        <h1 class="text-3xl font-bold mb-4">Mint Your NFT for {{ election.title }}</h1>
-        <p class="mb-6 text-gray-700">{{ election.description }}</p>
+        <h1 class="text-3xl font-bold mb-4">Mint Your NFT for Testing Election</h1>
+        <p class="mb-6 text-gray-700">Testing Election</p>
 
         <!-- Connect Phantom Wallet -->
         <button id="connectWallet" class="bg-green-500 text-white flex items-center px-4 py-2 rounded hover:bg-green-600 transition duration-200">
@@ -20,7 +21,7 @@
 
         <!-- Mint NFT Button -->
         <button id="mintNFT" disabled class="bg-gray-400 text-white px-4 py-2 rounded mt-2 cursor-not-allowed">
-            Mint NFT
+          <a href="voters.html">Mint NFT</a>  
         </button>
     </div>
 

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="/static/img/LogoLarge.png" />
     <title>Vote</title>
     <style>
         body {
@@ -22,7 +23,7 @@
             color: white;
             padding: 10px;
             text-align: center;
-        }
+        } 
         .navbar a {
             color: white;
             text-decoration: none;
@@ -63,13 +64,10 @@
     </style>
 </head>
 <body>
-    <div class="navbar">
-        <a href="{% url 'dashboard' %}">Home</a>
-    </div>
-
+   
     <div class="container">
         <!-- Logo -->
-        <img src="path/to/your/logo.png" alt="Logo" class="logo"> <!-- Add your logo path -->
+        <img src="/static/img/LogoLarge.png" alt="Logo" class="logo"> <!-- Add your logo path -->
 
         <!-- Election Voting Header -->
         <div class="text-2xl font-bold text-dark-green text-center">Vote in Election</div>
@@ -80,7 +78,7 @@
 
             <!-- Form to vote in an election -->
             <form method="POST" action="{% url 'submit-vote' poll_id=poll.id %}" class="space-y-4" id="vote-form">
-                {% csrf_token %}
+                <!-- {% csrf_token %} -->
                 
                 <!-- Dropdown to select election -->
                 <div>
@@ -88,7 +86,7 @@
                     <select name="election_id" id="election" class="mt-1 block w-full p-2 border border-gray-300 rounded-lg" required>
                         <option value="" disabled selected>Select an election</option>
                         {% for poll in polls %}
-                            <option value="{{ poll.id }}">{{ poll.title }}</option>
+                            <option value="{{ poll.id }}">Testing Election</option>
                         {% endfor %}
                     </select>
                 </div>
